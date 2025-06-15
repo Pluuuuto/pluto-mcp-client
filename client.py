@@ -6,10 +6,10 @@ import sys
 from typing import Optional
 from contextlib import AsyncExitStack
 
+from dotenv import load_dotenv
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 from openai import AsyncOpenAI
-from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -24,22 +24,18 @@ class MCPClient:
         self.model = os.getenv("MODEL_NAME", "gpt-4")
 
     async def connect_to_server(self, server_source: str):
-        """连接到 MCP Server，可以是本地脚本路径（.py/.js）或 npm 包名"""
+        """连接到 MCP Server，可以是本地文件或 NPM 包名"""
         if server_source.endswith(".py") or server_source.endswith(".js"):
-            # 本地文件
             command = "python" if server_source.endswith(".py") else "node"
             args = [server_source]
         else:
-            # NPM 包名
             command = "npx"
             args = ["-y", server_source]
-            # 如需额外传参，例如 "sqlmap"
-            if server_source == "pluto-sqlmap-mcp":
-                args.append("sqlmap")
 
         print(f"🔌 启动 MCP Server: {command} {' '.join(args)}")
 
-        server_params = StdioServerParameters(command=command, args=args)
+        env = os.environ.copy()
+        server_params = StdioServerParameters(command=command, args=args, env=env)
         stdio_transport = await self.exit_stack.enter_async_context(stdio_client(server_params))
         self.stdio, self.write = stdio_transport
         self.session = await self.exit_stack.enter_async_context(ClientSession(self.stdio, self.write))
@@ -111,7 +107,7 @@ class MCPClient:
 
 async def main():
     if len(sys.argv) < 2:
-        print("❗ 用法: python client.py <server_script_path>")
+        print("❗ 用法: python client.py <server_script_path_or_npm_package>")
         sys.exit(1)
     client = MCPClient()
     try:
