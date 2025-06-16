@@ -32,8 +32,15 @@ class MCPClient:
             servers = json.load(f)
 
         for server_source in servers:
-            command = "python" if server_source.endswith(".py") else "npx"
-            args = [server_source] if command == "python" else ["-y", server_source]
+            if server_source.endswith(".py"):
+                command = "python"
+                args = [server_source]
+            elif server_source.endswith(".js"):
+                command = "node"
+                args = [server_source]
+            else:
+                command = "npx"
+                args = ["-y", server_source]
 
             print(f"\n🔌 启动 MCP Server: {command} {' '.join(args)}")
             server_params = StdioServerParameters(command=command, args=args, env=os.environ.copy())
