@@ -1,6 +1,6 @@
 # 🕵️ Pluto's Mcp Client
 
-基于 [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) 的命令行客户端，集成 OpenAI 的等大语言模型（**注意不同大模型 API 之间存在差异，本项目支持的是 OpenAI**），通过自然语言驱动 `sqlmap`、`xscan`、`githack` 等工具完成安全测试、漏洞扫描任务，并自动生成 Markdown 报告。
+基于 Python 的漏洞挖掘的 [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) 客户端，集成 OpenAI 的大语言模型（**注意不同大模型 API 之间存在差异，本项目支持的是 OpenAI**），通过自然语言驱动 `sqlmap`、`xscan`、`githack` 等工具完成安全测试、漏洞扫描任务，并自动生成 Markdown 报告。
 
 ------
 
