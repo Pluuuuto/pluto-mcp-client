@@ -1,4 +1,7 @@
 [
   "pluto-sqlmap-mcp",
-  "pluto-xscan-mcp"
+  "pluto-xscan-mcp",
+  "ankes-curl-mcp",
+  "ankes-githack-mcp",
+  "coke-fenjing-mcp"
 ]

@@ -1,0 +1,5 @@
+[
+  "pluto-sqlmap-mcp",
+  "pluto-xscan-mcp"
+  "/absolute/path/to/Githack.py"
+]

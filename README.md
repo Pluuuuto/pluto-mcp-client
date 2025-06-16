@@ -17,7 +17,7 @@
 
 ## 🚀 快速开始 Quick Start
 
-### 1️⃣ 安装依赖
+### 1️⃣ 安装依赖（推荐使用 venv 或 conda 等虚拟环境进行包管理）
 
 ```bash
 pip install -r requirements.txt
@@ -39,9 +39,9 @@ MODEL_NAME = deepseek-chat
 
 # 工具路径配置(具体是 .py/.exe/... 文件由相应 mcp-server 规定)
 PYTHON_PATH = python
-GITHACK_PATH = path/to/your/githack.py
-SQLMAP_PATH = path/to/your/sqlmap.exe
-XSCAN_PATH = path/to/your/xscan.exe
+GITHACK_PATH = /absolute/path/to/githack.py
+SQLMAP_PATH = /absolute/path/to/sqlmap.exe
+XSCAN_PATH = /absolute/path/to/xscan.exe
 ```
 
 ------
@@ -53,7 +53,7 @@ XSCAN_PATH = path/to/your/xscan.exe
 [
   "pluto-sqlmap-mcp",
   "pluto-xscan-mcp",
-  "path/to/your/githack.py"
+  "/absolute/path/to/githack.py"
 ]
 ```
 
@@ -77,45 +77,32 @@ python client.py mcp_server.json
 
 ------
 
-## 🧪 示例报告结构（Markdown）
+## 📂 报告输出路径
 
-~~~markdown
-# 漏洞扫描报告
+所有生成报告保存在：
 
-## 工具：do-sqlmap
-**参数：**
-```json
-{
-  "url": "https://example.com"
-}
-**结果：**
-目标存在 SQL 注入风险，建议修复 id 参数。
-## 工具：do-xss-xscan
-**参数：**
-```json
-{
-  "target": "https://example.com"
-}
 ```
-**结果：**
+./reports/report_YYYYMMDD_HHMMSS.md
 ```
-发现开放端口 80, 443。未发现明显 XSS。
-```
-## 最终总结
-目标经过多个工具扫描后存在中等风险，请及时修复。
-```
-~~~
+
+> 使用 Markdown 格式输出，可使用 VSCode / Typora / Obsidian 查看。
+
+---
+
+## 🧪 报告内容示例（Markdown）
+
+见 `reports/report_20250616_232349.md`
 
 ---
 
 ## 🛠 支持的 MCP 工具
 
-| 工具名         | 功能             | 来源     | 类型         |
-| -------------- | ---------------- | -------- | ------------ |
-| `do-githack`   | Git 泄露检测     | NPM 包   | Python 脚本  |
-| `do-sqlmap`    | SQL 注入检测     | NPM 包   | 可执行文件   |
-| `do-xss-xscan` | XSS / 端口扫描   | NPM 包   | 可执行文件   |
-| ...            | 可自定义扩展工具 | 本地/NPM | 任意语言支持 |
+| 工具名         | 功能             | 来源        | 类型         |
+| -------------- | ---------------- | ----------- | ------------ |
+| `do-githack`   | Git 泄露检测     | NPM 包      | Python 脚本  |
+| `do-sqlmap`    | SQL 注入检测     | NPM 包      | 可执行文件   |
+| `do-xss-xscan` | XSS / 端口扫描   | NPM 包      | 可执行文件   |
+| ...            | 可自定义扩展工具 | 本地/NPM 包 | 任意语言支持 |
 
 ---
 
@@ -134,15 +121,7 @@ python client.py mcp_server.json
 
 ---
 
-## 📂 报告输出路径
-
-所有生成报告保存在：
-```
-./reports/report_YYYYMMDD_HHMMSS.md
-```
-> 使用 Markdown 格式输出，可使用 VSCode / Typora / Obsidian 查看。
-
-## 🧩 TODO（可选）
+## 🧩 TODO
 
 - [ ] 支持导出 PDF / HTML 报告
 - [ ] 报告增加风险等级与修复建议结构
