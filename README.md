@@ -2,8 +2,6 @@
 
 基于 Python 的漏洞挖掘的 [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) 客户端，集成 OpenAI 的大语言模型（**注意不同大模型 API 之间存在差异，本项目支持的是 OpenAI**），通过自然语言驱动 `sqlmap`、`xscan`、`githack` 等工具完成安全测试、漏洞扫描任务，并自动生成 Markdown 报告。
 
-------
-
 ## ✨ 特性 Features
 
 - ✅ 支持 Claude / OpenAI / DeepSeek 模型（兼容 OpenAI SDK）
@@ -12,8 +10,6 @@
 - ✅ 工具调用后 AI 自动继续对话，支持多轮上下文
 - ✅ 自动生成 Markdown 漏洞扫描报告（按时间命名）
 - ✅ 工具路径、模型参数通过 `.env` 配置，支持 `.py`、`.exe` 等
-
-------
 
 ## 🚀 快速开始 Quick Start
 
@@ -24,8 +20,6 @@ pip install -r requirements.txt
 ```
 
 > 要求 Python 3.8+
-
-------
 
 ### 2️⃣ 创建 `.env` 文件
 
@@ -44,8 +38,6 @@ SQLMAP_PATH = /absolute/path/to/sqlmap.exe
 XSCAN_PATH = /absolute/path/to/xscan.exe
 ```
 
-------
-
 ### 3️⃣ 设置 `mcp_server.json` 文件
 
 ```json
@@ -63,8 +55,6 @@ XSCAN_PATH = /absolute/path/to/xscan.exe
 python client.py mcp_server.json
 ```
 
-------
-
 ### 5️⃣自然语言交互
 
 进入对话后直接输入自然语言：
@@ -74,8 +64,6 @@ python client.py mcp_server.json
 🤖 自动调用 do-sqlmap 工具，分析响应并生成总结
 📄 报告已保存：reports/report_20250616_230112.md
 ```
-
-------
 
 ## 📂 报告输出路径
 
@@ -87,13 +75,9 @@ python client.py mcp_server.json
 
 > 使用 Markdown 格式输出，可使用 VSCode / Typora / Obsidian 查看。
 
----
-
 ## 🧪 报告内容示例（Markdown）
 
 见 `reports/report_20250616_232349.md`
-
----
 
 ## 🛠 支持的 MCP 工具
 
@@ -103,8 +87,6 @@ python client.py mcp_server.json
 | `do-sqlmap`    | SQL 注入检测     | NPM 包      | 可执行文件   |
 | `do-xss-xscan` | XSS / 端口扫描   | NPM 包      | 可执行文件   |
 | ...            | 可自定义扩展工具 | 本地/NPM 包 | 任意语言支持 |
-
----
 
 ## ⚙️ 环境变量说明（`.env`）
 
@@ -118,8 +100,6 @@ python client.py mcp_server.json
 | `SQLMAP_PATH`     | sqlmap.exe 绝对路径                      |
 | `XSCAN_PATH`      | xscan.exe 绝对路径                       |
 | ...               | 其他工具路径                             |
-
----
 
 ## 🧩 TODO
 
