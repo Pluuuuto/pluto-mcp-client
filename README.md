@@ -1,16 +1,17 @@
-## 🕵️ MCP Client CLI（已更新）
+# 🕵️ Pluto's Mcp Client
 
-基于 [Model Context Protocol (MCP)](https://modelcontextprotocol.io) 的命令行客户端，支持通过 Claude、OpenAI、DeepSeek 等大模型与工具（如 `sqlmap.exe`、`xscan`、`githack.py` 等）交互，完成漏洞扫描、安全测试任务。
+基于 [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) 的命令行客户端，集成 OpenAI 的等大语言模型（**注意不同大模型 API 之间存在差异，本项目支持的是 OpenAI**），通过自然语言驱动 `sqlmap`、`xscan`、`githack` 等工具完成安全测试、漏洞扫描任务，并自动生成 Markdown 报告。
 
 ------
 
 ## ✨ 特性 Features
 
-- ✅ 启动本地脚本或 NPM 包形式的 MCP Server
-- ✅ 支持 Claude / OpenAI / DeepSeek 等大语言模型
-- ✅ 自动调用工具（如 `sqlmap`、`xscan` 等）并解析返回值
-- ✅ 支持多轮对话 + 参数补全 + 工具推理
-- ✅ 工具路径通过 `.env` 配置，支持 `.py`、`.exe` 等
+- ✅ 支持 Claude / OpenAI / DeepSeek 模型（兼容 OpenAI SDK）
+- ✅ 启动本地脚本或 NPM 包形式的 MCP Server（支持多个）
+- ✅ 自动识别并调用工具，参数推理、补全、验证
+- ✅ 工具调用后 AI 自动继续对话，支持多轮上下文
+- ✅ 自动生成 Markdown 漏洞扫描报告（按时间命名）
+- ✅ 工具路径、模型参数通过 `.env` 配置，支持 `.py`、`.exe` 等
 
 ------
 
@@ -28,62 +29,122 @@ pip install -r requirements.txt
 
 ### 2️⃣ 创建 `.env` 文件
 
-在项目根目录创建 `.env` 文件，配置模型和工具路径：
+在项目根目录创建 `.env`，配置模型 API 与工具路径：
 
-```env
-OPENAI_API_KEY=your-api-key
-OPENAI_BASE_URL=https://api.openai.com/v1
-MODEL_NAME=gpt-4
+```txt
+# 模型配置
+OPENAI_API_KEY = your-openai-or-deepseek-key
+OPENAI_BASE_URL = https://api.deepseek.com/v1
+MODEL_NAME = deepseek-chat
 
-# 工具路径配置
-GITHACK_PATH=D:/Tools/githack.py
-PYTHON_PATH=python
-
-SQLMAP_PATH=D:/Tools/sqlmap/sqlmap.exe
-XSCAN_PATH=D:/Tools/xscan/xscan.exe
+# 工具路径配置(具体是 .py/.exe/... 文件由相应 mcp-server 规定)
+PYTHON_PATH = python
+GITHACK_PATH = path/to/your/githack.py
+SQLMAP_PATH = path/to/your/sqlmap.exe
+XSCAN_PATH = path/to/your/xscan.exe
 ```
 
 ------
 
-### 3️⃣ 启动 MCP Server 并交互测试
+### 3️⃣ 设置 `mcp_server.json` 文件
+
+```json
+# 设置 mcp-server 的路径，支持本地文件/远程npm包，示例：
+[
+  "pluto-sqlmap-mcp",
+  "pluto-xscan-mcp",
+  "path/to/your/githack.py"
+]
+```
+
+### 4️⃣ 启动 MCP 客户端
 
 ```bash
-# 启动本地 MCP Server 脚本
-python client.py ./build/index.js
-
-# 或启动已发布的 NPM 包 MCP Server（如 sqlmap）
-python client.py pluto-sqlmap-mcp
-```
-
-进入后直接提问：
-
-```ruby
-你：请测试 https://xxx.com/?id=1 是否存在 SQL 注入
-🤖 自动调用 do-sqlmap 工具并返回检测结果
+python client.py mcp_server.json
 ```
 
 ------
+
+### 5️⃣自然语言交互
+
+进入对话后直接输入自然语言：
+
+```text
+你：请测试 https://example.com/?id=1 是否存在 SQL 注入并生成报告
+🤖 自动调用 do-sqlmap 工具，分析响应并生成总结
+📄 报告已保存：reports/report_20250616_230112.md
+```
+
+------
+
+## 🧪 示例报告结构（Markdown）
+
+~~~markdown
+# 漏洞扫描报告
+
+## 工具：do-sqlmap
+**参数：**
+```json
+{
+  "url": "https://example.com"
+}
+**结果：**
+目标存在 SQL 注入风险，建议修复 id 参数。
+## 工具：do-xss-xscan
+**参数：**
+```json
+{
+  "target": "https://example.com"
+}
+```
+**结果：**
+```
+发现开放端口 80, 443。未发现明显 XSS。
+```
+## 最终总结
+目标经过多个工具扫描后存在中等风险，请及时修复。
+```
+~~~
+
+---
 
 ## 🛠 支持的 MCP 工具
 
-| 工具名         | 功能描述       | 来源   | 运行方式       |
-| -------------- | -------------- | ------ | -------------- |
-| `do-githack`   | Git 泄露检测   | NPM 包 | Python + `.py` |
-| `do-sqlmap`    | SQL 注入检测   | NPM 包 | 可执行 `.exe`  |
-| `do-xss-xscan` | XSS / 端口扫描 | NPM 包 | 可执行 `.exe`  |
-| ...            | ...            | ...    | ...            |
+| 工具名         | 功能             | 来源     | 类型         |
+| -------------- | ---------------- | -------- | ------------ |
+| `do-githack`   | Git 泄露检测     | NPM 包   | Python 脚本  |
+| `do-sqlmap`    | SQL 注入检测     | NPM 包   | 可执行文件   |
+| `do-xss-xscan` | XSS / 端口扫描   | NPM 包   | 可执行文件   |
+| ...            | 可自定义扩展工具 | 本地/NPM | 任意语言支持 |
 
-------
+---
 
 ## ⚙️ 环境变量说明（`.env`）
 
-| 变量名            | 描述                              |
-| ----------------- | --------------------------------- |
-| `OPENAI_API_KEY`  | OpenAI / Claude 的 API Key        |
-| `OPENAI_BASE_URL` | 模型 API 接口地址（默认 OpenAI）  |
-| `MODEL_NAME`      | 模型名称，如 `gpt-4`, `gpt-4o` 等 |
-| `GITHACK_PATH`    | githack.py 的路径（绝对路径）     |
-| `PYTHON_PATH`     | Python 解释器（如 `python3`）     |
-| `SQLMAP_PATH`     | `sqlmap.exe` 的路径（绝对路径）   |
-| `XSCAN_PATH`      | `xscan.exe` 的路径（绝对路径）    |
-| ...               | ...                               |
+| 变量名            | 描述                                     |
+| ----------------- | ---------------------------------------- |
+| `OPENAI_API_KEY`  | OpenAI 或 DeepSeek API Key               |
+| `OPENAI_BASE_URL` | 模型 API 接口地址                        |
+| `MODEL_NAME`      | 模型名称，如 `gpt-4`, `deepseek-chat` 等 |
+| `PYTHON_PATH`     | Python 解释器路径（如 `python3`）        |
+| `GITHACK_PATH`    | githack.py 脚本绝对路径                  |
+| `SQLMAP_PATH`     | sqlmap.exe 绝对路径                      |
+| `XSCAN_PATH`      | xscan.exe 绝对路径                       |
+| ...               | 其他工具路径                             |
+
+---
+
+## 📂 报告输出路径
+
+所有生成报告保存在：
+```
+./reports/report_YYYYMMDD_HHMMSS.md
+```
+> 使用 Markdown 格式输出，可使用 VSCode / Typora / Obsidian 查看。
+
+## 🧩 TODO（可选）
+
+- [ ] 支持导出 PDF / HTML 报告
+- [ ] 报告增加风险等级与修复建议结构
+- [ ] 工具调用失败的错误日志自动汇总
+- [ ] Web UI 界面化展示历史记录
